@@ -1,1 +1,0 @@
-# scandit-capacitor-datacapture-text
