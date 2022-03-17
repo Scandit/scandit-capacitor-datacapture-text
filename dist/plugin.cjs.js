@@ -965,6 +965,9 @@ class Vibration extends DefaultSerializeable {
         super();
         this.type = type;
     }
+    static fromJSON(json) {
+        return new Vibration(json.type);
+    }
     static get defaultVibration() {
         return new Vibration(VibrationType.default);
     }
@@ -980,6 +983,9 @@ class Sound extends DefaultSerializeable {
         super();
         this.resource = null;
         this.resource = resource;
+    }
+    static fromJSON(json) {
+        return new Sound(json.resource);
     }
     static get defaultSound() {
         return new Sound(null);
@@ -999,6 +1005,9 @@ class Feedback extends DefaultSerializeable {
     }
     static get defaultFeedback() {
         return new Feedback(Vibration.defaultVibration, Sound.defaultSound);
+    }
+    static fromJSON(json) {
+        return new Feedback(json.vibration ? Vibration.fromJSON(json.vibration) : null, json.sound ? Sound.fromJSON(json.sound) : null);
     }
     get vibration() {
         return this._vibration;
