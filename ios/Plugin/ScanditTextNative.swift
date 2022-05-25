@@ -87,9 +87,19 @@ public class ScanditTextNative: CAPPlugin, DataCapturePlugin {
 
     @objc(finishCallback:)
     func finishCallback(_ call: CAPPluginCall) {
+        guard let resultObject = call.getObject("result") else {
+            call.reject(CommandError.invalidJSON.toJSONString())
+            return
+        }
+
+        guard let finishCallbackId = resultObject["finishCallbackID"] else {
+            call.reject(CommandError.invalidJSON.toJSONString())
+            return
+        }
+  
         guard let result = TextCaptureCallbackResult.from(([
-            "finishCallbackID": call.getObject("result")?["finishCallbackID"] ?? ListenerEvent.Name.didCaptureInTextCapture.rawValue,
-            "result": call.getObject("result")] as NSDictionary).jsonString) else {
+            "finishCallbackID": finishCallbackId,
+            "result": resultObject] as NSDictionary).jsonString) else {
             call.reject(CommandError.invalidJSON.toJSONString())
             return
         }

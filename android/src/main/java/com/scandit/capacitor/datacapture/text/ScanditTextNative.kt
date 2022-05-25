@@ -1,4 +1,3 @@
-
 /*
  * This file is part of the Scandit Data Capture SDK
  *
@@ -8,7 +7,10 @@
 package com.scandit.capacitor.datacapture.text
 
 import android.util.Log
-import com.getcapacitor.*
+import com.getcapacitor.JSObject
+import com.getcapacitor.Plugin
+import com.getcapacitor.PluginCall
+import com.getcapacitor.PluginMethod
 import com.scandit.capacitor.datacapture.core.ScanditCaptureCoreNative
 import com.scandit.capacitor.datacapture.core.communication.ModeDeserializersProvider
 import com.scandit.capacitor.datacapture.core.data.SerializableCallbackAction.Companion.FIELD_FINISH_CALLBACK_ID
@@ -36,7 +38,7 @@ import com.scandit.datacapture.text.ui.TextCaptureOverlay
 import org.json.JSONException
 import org.json.JSONObject
 
-@NativePlugin(name = "ScanditTextNative")
+@com.getcapacitor.annotation.CapacitorPlugin(name = "ScanditTextNative")
 class ScanditTextNative :
     Plugin(),
     CapacitorPlugin,
@@ -61,7 +63,7 @@ class ScanditTextNative :
                 textCaptureDefaults = SerializableTextCaptureDefaults(
                     textCaptureOverlayDefaults = SerializableTextCaptureOverlayDefaults(
                         brushDefaults = SerializableBrushDefaults(
-                            TextCaptureOverlay.DEFAULT_BRUSH
+                            TextCaptureOverlay.defaultBrush()
                         )
                     ),
                     textCaptureSettingsDefaults = SerializableTextCaptureSettingsDefaults(
@@ -94,7 +96,7 @@ class ScanditTextNative :
             if (!data.has(FIELD_RESULT)) {
                 throw JSONException("Missing $FIELD_RESULT field in response json")
             }
-            val result: JSONObject = data.optJSONObject(FIELD_RESULT)
+            val result: JSONObject = data.optJSONObject(FIELD_RESULT) ?: JSONObject()
             when {
                 isFinishTextCaptureModeCallback(result) -> textCaptureCallback?.onFinishCallback(
                     SerializableFinishModeCallbackData.fromJson(result)
