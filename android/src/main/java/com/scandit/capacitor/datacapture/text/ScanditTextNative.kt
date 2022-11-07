@@ -11,6 +11,7 @@ import com.getcapacitor.JSObject
 import com.getcapacitor.Plugin
 import com.getcapacitor.PluginCall
 import com.getcapacitor.PluginMethod
+import com.getcapacitor.annotation.CapacitorPlugin
 import com.scandit.capacitor.datacapture.core.ScanditCaptureCoreNative
 import com.scandit.capacitor.datacapture.core.communication.ModeDeserializersProvider
 import com.scandit.capacitor.datacapture.core.data.SerializableCallbackAction.Companion.FIELD_FINISH_CALLBACK_ID
@@ -38,10 +39,10 @@ import com.scandit.datacapture.text.ui.TextCaptureOverlay
 import org.json.JSONException
 import org.json.JSONObject
 
-@com.getcapacitor.annotation.CapacitorPlugin(name = "ScanditTextNative")
+@CapacitorPlugin(name = "ScanditTextNative")
 class ScanditTextNative :
     Plugin(),
-    CapacitorPlugin,
+    com.scandit.capacitor.datacapture.text.CapacitorPlugin,
     ModeDeserializersProvider,
     TextCaptureDeserializerListener,
     TextCaptureListener {

@@ -1472,13 +1472,7 @@ __decorate([
     serializationDefault(NoneLocationSelection)
 ], TextCaptureSettings.prototype, "locationSelection", void 0);
 
-class ScanditTextPlugin extends core.WebPlugin {
-    constructor() {
-        super({
-            name: 'ScanditTextPlugin',
-            platforms: ['android', 'ios'],
-        });
-    }
+class ScanditTextPluginImplementation {
     async initialize() {
         const api = {
             TextCapture,
@@ -1493,9 +1487,13 @@ class ScanditTextPlugin extends core.WebPlugin {
         }, reject));
     }
 }
-const scanditText = new ScanditTextPlugin();
-core.registerWebPlugin(scanditText);
+core.registerPlugin('ScanditTextPlugin', {
+    android: () => new ScanditTextPluginImplementation(),
+    ios: () => new ScanditTextPluginImplementation(),
+});
+// tslint:disable-next-line:variable-name
+const ScanditTextPlugin = new ScanditTextPluginImplementation();
 
 exports.ScanditTextPlugin = ScanditTextPlugin;
-exports.scanditText = scanditText;
+exports.ScanditTextPluginImplementation = ScanditTextPluginImplementation;
 //# sourceMappingURL=plugin.cjs.js.map

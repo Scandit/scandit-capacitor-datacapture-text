@@ -1469,13 +1469,7 @@ var capacitorScanditText = (function (exports, core) {
         serializationDefault(NoneLocationSelection)
     ], TextCaptureSettings.prototype, "locationSelection", void 0);
 
-    class ScanditTextPlugin extends core.WebPlugin {
-        constructor() {
-            super({
-                name: 'ScanditTextPlugin',
-                platforms: ['android', 'ios'],
-            });
-        }
+    class ScanditTextPluginImplementation {
         async initialize() {
             const api = {
                 TextCapture,
@@ -1490,11 +1484,15 @@ var capacitorScanditText = (function (exports, core) {
             }, reject));
         }
     }
-    const scanditText = new ScanditTextPlugin();
-    core.registerWebPlugin(scanditText);
+    core.registerPlugin('ScanditTextPlugin', {
+        android: () => new ScanditTextPluginImplementation(),
+        ios: () => new ScanditTextPluginImplementation(),
+    });
+    // tslint:disable-next-line:variable-name
+    const ScanditTextPlugin = new ScanditTextPluginImplementation();
 
     exports.ScanditTextPlugin = ScanditTextPlugin;
-    exports.scanditText = scanditText;
+    exports.ScanditTextPluginImplementation = ScanditTextPluginImplementation;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 
