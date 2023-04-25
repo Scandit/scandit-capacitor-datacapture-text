@@ -26,7 +26,10 @@ class TextCaptureCallback(
     private val lock = ReentrantLock(true)
     private val condition = lock.newCondition()
 
+    private val latestSession: AtomicReference<TextCaptureSession?> = AtomicReference()
     private val latestStateData = AtomicReference<SerializableFinishModeCallbackData?>(null)
+
+    fun latestSession() = latestSession.get()
 
     override fun onTextCaptured(mode: TextCapture, session: TextCaptureSession, data: FrameData) {
         if (disposed.get()) return
@@ -46,6 +49,7 @@ class TextCaptureCallback(
                     )
                 )
             )
+            latestSession.set(session)
             lockAndWait()
             onUnlock(mode)
         }

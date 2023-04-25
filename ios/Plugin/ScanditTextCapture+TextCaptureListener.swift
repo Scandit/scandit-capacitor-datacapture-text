@@ -1,3 +1,9 @@
+/*
+ * This file is part of the Scandit Data Capture SDK
+ *
+ * Copyright (C) 2023- Scandit AG. All rights reserved.
+ */
+
 import ScanditTextCapture
 import ScanditCapacitorDatacaptureCore
 
@@ -8,6 +14,9 @@ extension ScanditTextNative: TextCaptureListener {
         guard let callback = callbacks.textCaptureListener else {
             return
         }
+
+        ScanditCaptureCore.lastFrame = frameData
+        defer { ScanditCaptureCore.lastFrame = nil }
 
         let listenerEvent = ListenerEvent(name: .didCaptureInTextCapture,
                                           argument: ["session": session.jsonString],

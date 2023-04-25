@@ -1,5 +1,5 @@
+import { CameraProxy } from '../../../../scandit-capacitor-datacapture-core/src/ts/Capacitor/CameraProxy';
 import { TextCaptureSession } from '../TextCapture+Related';
-import { Plugins } from '@capacitor/core';
 import { Capacitor, CapacitorFunction } from './Capacitor';
 var TextCaptureListenerEvent;
 (function (TextCaptureListenerEvent) {
@@ -17,13 +17,13 @@ export class TextCaptureListenerProxy {
     }
     subscribeListener() {
         TextCaptureListenerProxy.capacitorExec(this.notifyListeners.bind(this), null, CapacitorFunction.SubscribeTextCaptureListener, null);
-        Plugins[Capacitor.pluginName]
+        window.Capacitor.Plugins[Capacitor.pluginName]
             .addListener(TextCaptureListenerEvent.DidCapture, this.notifyListeners.bind(this));
     }
     notifyListeners(event) {
         const done = () => {
             this.textCapture.isInListenerCallback = false;
-            Plugins[Capacitor.pluginName].finishCallback({
+            window.Capacitor.Plugins[Capacitor.pluginName].finishCallback({
                 result: {
                     enabled: this.textCapture.isEnabled,
                     finishCallbackID: event.name,
@@ -43,7 +43,7 @@ export class TextCaptureListenerProxy {
                 case TextCaptureListenerEvent.DidCapture:
                     if (listener.didCaptureText) {
                         listener.didCaptureText(this.textCapture, TextCaptureSession
-                            .fromJSON(JSON.parse(event.argument.session)));
+                            .fromJSON(JSON.parse(event.argument.session)), CameraProxy.getLastFrame);
                     }
                     break;
             }

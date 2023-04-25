@@ -150,7 +150,9 @@ class ScanditTextNative :
     }
 
     override fun onTextCaptured(mode: TextCapture, session: TextCaptureSession, data: FrameData) {
+        ScanditCaptureCoreNative.lastFrame = data
         textCaptureCallback?.onTextCaptured(mode, session, data)
+        ScanditCaptureCoreNative.lastFrame = null
     }
 
     private fun isFinishTextCaptureModeCallback(data: JSONObject) =

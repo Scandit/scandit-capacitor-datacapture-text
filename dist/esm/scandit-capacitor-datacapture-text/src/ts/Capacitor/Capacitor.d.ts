@@ -4,8 +4,12 @@ export declare const Capacitor: {
     defaults: Defaults;
     exec: (success: Function | null, error: Function | null, functionName: string, args: [any] | null) => void;
 };
+export interface CapacitorWindow extends Window {
+    Scandit: any;
+    Capacitor: any;
+}
 export declare enum CapacitorFunction {
     GetDefaults = "getDefaults",
     SubscribeTextCaptureListener = "subscribeTextCaptureListener"
 }
-export declare const getDefaults: Promise<Defaults>;
+export declare const getDefaults: () => Promise<Defaults>;
