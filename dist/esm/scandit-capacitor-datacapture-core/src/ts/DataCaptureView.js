@@ -127,6 +127,7 @@ export class HTMLElementState {
     }
 }
 export class DataCaptureView extends DefaultSerializeable {
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     constructor() {
         super();
         this._context = null;
@@ -192,6 +193,7 @@ export class DataCaptureView extends DefaultSerializeable {
     get privateContext() {
         return this.context;
     }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     static forContext(context) {
         const view = new DataCaptureView();
         view.context = context;
