@@ -1,4 +1,4 @@
-export declare type Optional<T> = T | null;
+export type Optional<T> = T | null;
 export interface ScanditTextPluginInterface {
     initialize(coreDefaults: any): Promise<any>;
 }
@@ -476,7 +476,8 @@ export class MarginsWithUnit {
     private static fromJSON;
     private static get zero();
     constructor(left: NumberWithUnit, right: NumberWithUnit, top: NumberWithUnit, bottom: NumberWithUnit);
-} type ColorJSON = string;
+}
+type ColorJSON = string;
 interface PrivateColor {
     fromJSON(json: ColorJSON): Color;
 }

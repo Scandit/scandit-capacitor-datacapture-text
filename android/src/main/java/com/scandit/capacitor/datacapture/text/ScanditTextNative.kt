@@ -13,7 +13,6 @@ import com.getcapacitor.PluginCall
 import com.getcapacitor.PluginMethod
 import com.getcapacitor.annotation.CapacitorPlugin
 import com.scandit.capacitor.datacapture.core.ScanditCaptureCoreNative
-import com.scandit.capacitor.datacapture.core.communication.ModeDeserializersProvider
 import com.scandit.capacitor.datacapture.core.data.SerializableCallbackAction.Companion.FIELD_FINISH_CALLBACK_ID
 import com.scandit.capacitor.datacapture.core.data.SerializableFinishModeCallbackData
 import com.scandit.capacitor.datacapture.core.data.defaults.SerializableBrushDefaults
@@ -26,9 +25,10 @@ import com.scandit.capacitor.datacapture.text.data.defaults.SerializableTextCapt
 import com.scandit.capacitor.datacapture.text.data.defaults.SerializableTextCaptureSettingsDefaults
 import com.scandit.capacitor.datacapture.text.data.defaults.SerializableTextDefaults
 import com.scandit.capacitor.datacapture.text.handlers.TextCaptureHandler
-import com.scandit.datacapture.core.capture.serialization.DataCaptureModeDeserializer
 import com.scandit.datacapture.core.data.FrameData
 import com.scandit.datacapture.core.json.JsonValue
+import com.scandit.datacapture.frameworks.core.deserialization.Deserializers
+import com.scandit.datacapture.frameworks.core.utils.LastFrameData
 import com.scandit.datacapture.text.capture.TextCapture
 import com.scandit.datacapture.text.capture.TextCaptureListener
 import com.scandit.datacapture.text.capture.TextCaptureSession
@@ -43,7 +43,6 @@ import org.json.JSONObject
 class ScanditTextNative :
     Plugin(),
     com.scandit.capacitor.datacapture.text.CapacitorPlugin,
-    ModeDeserializersProvider,
     TextCaptureDeserializerListener,
     TextCaptureListener {
 
@@ -51,6 +50,8 @@ class ScanditTextNative :
     private val textCaptureHandler: TextCaptureHandler = TextCaptureHandler(this)
 
     private var lastTextCaptureEnabledState: Boolean = false
+
+    private val textCaptureDeserializer = TextCaptureDeserializer()
 
     companion object {
         private const val FIELD_RESULT = "result"
@@ -127,16 +128,18 @@ class ScanditTextNative :
         }
     }
 
+    override fun handleOnStart() {
+        textCaptureDeserializer.listener = this
+        Deserializers.Factory.addModeDeserializer(textCaptureDeserializer)
+    }
+
     override fun handleOnStop() {
         lastTextCaptureEnabledState = textCaptureHandler.textCapture?.isEnabled ?: false
         textCaptureHandler.textCapture?.isEnabled = false
+        textCaptureDeserializer.listener = null
+        Deserializers.Factory.removeModeDeserializer(textCaptureDeserializer)
         textCaptureCallback?.forceRelease()
     }
-
-    override fun provideModeDeserializers(): List<DataCaptureModeDeserializer> = listOf(
-        TextCaptureDeserializer()
-            .also { it.listener = this }
-    )
 
     override fun onModeDeserializationFinished(
         deserializer: TextCaptureDeserializer,
@@ -150,9 +153,9 @@ class ScanditTextNative :
     }
 
     override fun onTextCaptured(mode: TextCapture, session: TextCaptureSession, data: FrameData) {
-        ScanditCaptureCoreNative.lastFrame = data
+        LastFrameData.frameData.set(data)
         textCaptureCallback?.onTextCaptured(mode, session, data)
-        ScanditCaptureCoreNative.lastFrame = null
+        LastFrameData.frameData.set(null)
     }
 
     private fun isFinishTextCaptureModeCallback(data: JSONObject) =

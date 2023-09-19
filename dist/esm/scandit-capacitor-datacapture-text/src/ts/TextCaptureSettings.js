@@ -8,18 +8,18 @@ import { Capacitor } from './Capacitor/Capacitor';
 import { NoneLocationSelection } from '../../../scandit-capacitor-datacapture-core/src/ts/LocationSelection';
 import { DefaultSerializeable, serializationDefault } from '../../../scandit-capacitor-datacapture-core/src/ts/Serializeable';
 export class TextCaptureSettings extends DefaultSerializeable {
-    constructor() {
-        super();
-        this.duplicateFilter = Capacitor.defaults.TextCapture.TextCaptureSettings.duplicateFilter;
-        this.locationSelection = null;
-        this.recognitionDirection = Capacitor.defaults.TextCapture.TextCaptureSettings.recognitionDirection;
-    }
     static fromJSON(json) {
         const settings = new TextCaptureSettings();
         Object.keys(json).forEach(key => {
             settings[key] = json[key];
         });
         return settings;
+    }
+    constructor() {
+        super();
+        this.duplicateFilter = Capacitor.defaults.TextCapture.TextCaptureSettings.duplicateFilter;
+        this.locationSelection = null;
+        this.recognitionDirection = Capacitor.defaults.TextCapture.TextCaptureSettings.recognitionDirection;
     }
 }
 __decorate([
