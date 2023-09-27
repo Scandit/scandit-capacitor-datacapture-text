@@ -123,7 +123,7 @@ class DefaultSerializeable {
     }
 }
 
-var __decorate$7 = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
+var __decorate$8 = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
@@ -145,10 +145,10 @@ class Point extends DefaultSerializeable {
         this._y = y;
     }
 }
-__decorate$7([
+__decorate$8([
     nameForSerialization('x')
 ], Point.prototype, "_x", void 0);
-__decorate$7([
+__decorate$8([
     nameForSerialization('y')
 ], Point.prototype, "_y", void 0);
 class Quadrilateral extends DefaultSerializeable {
@@ -175,16 +175,16 @@ class Quadrilateral extends DefaultSerializeable {
         this._bottomLeft = bottomLeft;
     }
 }
-__decorate$7([
+__decorate$8([
     nameForSerialization('topLeft')
 ], Quadrilateral.prototype, "_topLeft", void 0);
-__decorate$7([
+__decorate$8([
     nameForSerialization('topRight')
 ], Quadrilateral.prototype, "_topRight", void 0);
-__decorate$7([
+__decorate$8([
     nameForSerialization('bottomRight')
 ], Quadrilateral.prototype, "_bottomRight", void 0);
-__decorate$7([
+__decorate$8([
     nameForSerialization('bottomLeft')
 ], Quadrilateral.prototype, "_bottomLeft", void 0);
 var MeasureUnit;
@@ -209,10 +209,10 @@ class NumberWithUnit extends DefaultSerializeable {
         this._unit = unit;
     }
 }
-__decorate$7([
+__decorate$8([
     nameForSerialization('value')
 ], NumberWithUnit.prototype, "_value", void 0);
-__decorate$7([
+__decorate$8([
     nameForSerialization('unit')
 ], NumberWithUnit.prototype, "_unit", void 0);
 class PointWithUnit extends DefaultSerializeable {
@@ -234,10 +234,10 @@ class PointWithUnit extends DefaultSerializeable {
         this._y = y;
     }
 }
-__decorate$7([
+__decorate$8([
     nameForSerialization('x')
 ], PointWithUnit.prototype, "_x", void 0);
-__decorate$7([
+__decorate$8([
     nameForSerialization('y')
 ], PointWithUnit.prototype, "_y", void 0);
 class Rect extends DefaultSerializeable {
@@ -253,10 +253,10 @@ class Rect extends DefaultSerializeable {
         this._size = size;
     }
 }
-__decorate$7([
+__decorate$8([
     nameForSerialization('origin')
 ], Rect.prototype, "_origin", void 0);
-__decorate$7([
+__decorate$8([
     nameForSerialization('size')
 ], Rect.prototype, "_size", void 0);
 class RectWithUnit extends DefaultSerializeable {
@@ -272,10 +272,10 @@ class RectWithUnit extends DefaultSerializeable {
         this._size = size;
     }
 }
-__decorate$7([
+__decorate$8([
     nameForSerialization('origin')
 ], RectWithUnit.prototype, "_origin", void 0);
-__decorate$7([
+__decorate$8([
     nameForSerialization('size')
 ], RectWithUnit.prototype, "_size", void 0);
 class SizeWithUnit extends DefaultSerializeable {
@@ -291,10 +291,10 @@ class SizeWithUnit extends DefaultSerializeable {
         this._height = height;
     }
 }
-__decorate$7([
+__decorate$8([
     nameForSerialization('width')
 ], SizeWithUnit.prototype, "_width", void 0);
-__decorate$7([
+__decorate$8([
     nameForSerialization('height')
 ], SizeWithUnit.prototype, "_height", void 0);
 class Size extends DefaultSerializeable {
@@ -313,10 +313,10 @@ class Size extends DefaultSerializeable {
         this._height = height;
     }
 }
-__decorate$7([
+__decorate$8([
     nameForSerialization('width')
 ], Size.prototype, "_width", void 0);
-__decorate$7([
+__decorate$8([
     nameForSerialization('height')
 ], Size.prototype, "_height", void 0);
 class SizeWithAspect {
@@ -331,10 +331,10 @@ class SizeWithAspect {
         this._aspect = aspect;
     }
 }
-__decorate$7([
+__decorate$8([
     nameForSerialization('size')
 ], SizeWithAspect.prototype, "_size", void 0);
-__decorate$7([
+__decorate$8([
     nameForSerialization('aspect')
 ], SizeWithAspect.prototype, "_aspect", void 0);
 var SizingMode;
@@ -437,16 +437,16 @@ class SizeWithUnitAndAspect {
         }
     }
 }
-__decorate$7([
+__decorate$8([
     nameForSerialization('widthAndHeight')
 ], SizeWithUnitAndAspect.prototype, "_widthAndHeight", void 0);
-__decorate$7([
+__decorate$8([
     nameForSerialization('widthAndAspectRatio')
 ], SizeWithUnitAndAspect.prototype, "_widthAndAspectRatio", void 0);
-__decorate$7([
+__decorate$8([
     nameForSerialization('heightAndAspectRatio')
 ], SizeWithUnitAndAspect.prototype, "_heightAndAspectRatio", void 0);
-__decorate$7([
+__decorate$8([
     nameForSerialization('shorterDimensionAndAspectRatio')
 ], SizeWithUnitAndAspect.prototype, "_shorterDimensionAndAspectRatio", void 0);
 class MarginsWithUnit extends DefaultSerializeable {
@@ -476,16 +476,16 @@ class MarginsWithUnit extends DefaultSerializeable {
         this._bottom = bottom;
     }
 }
-__decorate$7([
+__decorate$8([
     nameForSerialization('left')
 ], MarginsWithUnit.prototype, "_left", void 0);
-__decorate$7([
+__decorate$8([
     nameForSerialization('right')
 ], MarginsWithUnit.prototype, "_right", void 0);
-__decorate$7([
+__decorate$8([
     nameForSerialization('top')
 ], MarginsWithUnit.prototype, "_top", void 0);
-__decorate$7([
+__decorate$8([
     nameForSerialization('bottom')
 ], MarginsWithUnit.prototype, "_bottom", void 0);
 class Color {
@@ -595,7 +595,7 @@ var LogoStyle;
     LogoStyle["Extended"] = "extended";
 })(LogoStyle || (LogoStyle = {}));
 
-var __decorate$6 = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
+var __decorate$7 = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
@@ -633,7 +633,7 @@ class RectangularViewfinderAnimation extends DefaultSerializeable {
         this._isLooping = isLooping;
     }
 }
-__decorate$6([
+__decorate$7([
     nameForSerialization('isLooping')
 ], RectangularViewfinderAnimation.prototype, "_isLooping", void 0);
 
@@ -667,6 +667,12 @@ const Capacitor$1 = {
     exec: (success, error, functionName, args) => capacitorExec(success, error, pluginName$1, functionName, args),
 };
 
+var __decorate$6 = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
 var FrameSourceState;
 (function (FrameSourceState) {
     FrameSourceState["On"] = "on";
@@ -742,13 +748,22 @@ class CameraSettings extends DefaultSerializeable {
         settings.zoomGestureZoomFactor = json.zoomGestureZoomFactor;
         settings.focusGestureStrategy = json.focusGestureStrategy;
         settings.shouldPreferSmoothAutoFocus = json.shouldPreferSmoothAutoFocus;
-        if (json.api !== undefined && json.api !== null) {
-            settings.api = json.api;
+        if (json.properties != undefined) {
+            for (const key of Object.keys(json.properties)) {
+                settings.setProperty(key, json.properties[key]);
+            }
         }
         return settings;
     }
     constructor(settings) {
         super();
+        this.focusHiddenProperties = [
+            'range',
+            'manualLensPosition',
+            'shouldPreferSmoothAutoFocus',
+            'focusStrategy',
+            'focusGestureStrategy'
+        ];
         this.preferredResolution = Capacitor$1.defaults.Camera.Settings.preferredResolution;
         this.zoomFactor = Capacitor$1.defaults.Camera.Settings.zoomFactor;
         this.zoomGestureZoomFactor = Capacitor$1.defaults.Camera.Settings.zoomGestureZoomFactor;
@@ -765,12 +780,22 @@ class CameraSettings extends DefaultSerializeable {
         }
     }
     setProperty(name, value) {
+        if (this.focusHiddenProperties.includes(name)) {
+            this.focus[name] = value;
+            return;
+        }
         this[name] = value;
     }
     getProperty(name) {
+        if (this.focusHiddenProperties.includes(name)) {
+            return this.focus[name];
+        }
         return this[name];
     }
 }
+__decorate$6([
+    ignoreFromSerialization
+], CameraSettings.prototype, "focusHiddenProperties", void 0);
 class ImageBuffer {
     get width() {
         return this._width;
