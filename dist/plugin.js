@@ -648,7 +648,6 @@ var capacitorScanditText = (function (exports, core) {
         CapacitorFunction["ViewPointForFramePoint"] = "viewPointForFramePoint";
         CapacitorFunction["ViewQuadrilateralForFrameQuadrilateral"] = "viewQuadrilateralForFrameQuadrilateral";
         CapacitorFunction["SubscribeViewListener"] = "subscribeViewListener";
-        CapacitorFunction["UnsubscribeViewListener"] = "unsubscribeViewListener";
         CapacitorFunction["GetCurrentCameraState"] = "getCurrentCameraState";
         CapacitorFunction["GetIsTorchAvailable"] = "getIsTorchAvailable";
         CapacitorFunction["GetLastFrame"] = "getLastFrame";
