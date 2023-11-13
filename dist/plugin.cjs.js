@@ -5,6 +5,10 @@ Object.defineProperty(exports, '__esModule', { value: true });
 var core = require('@capacitor/core');
 
 class CapacitorError {
+    constructor(code, message) {
+        this.code = code;
+        this.message = message;
+    }
     static fromJSON(json) {
         if (json && json.code && json.message) {
             return new CapacitorError(json.code, json.message);
@@ -12,10 +16,6 @@ class CapacitorError {
         else {
             return null;
         }
-    }
-    constructor(code, message) {
-        this.code = code;
-        this.message = message;
     }
 }
 const capacitorExec = (successCallback, errorCallback, pluginName, functionName, args) => {
@@ -123,13 +123,18 @@ class DefaultSerializeable {
     }
 }
 
-var __decorate$8 = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
+var __decorate$7 = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 class Point extends DefaultSerializeable {
+    constructor(x, y) {
+        super();
+        this._x = x;
+        this._y = y;
+    }
     get x() {
         return this._x;
     }
@@ -139,19 +144,21 @@ class Point extends DefaultSerializeable {
     static fromJSON(json) {
         return new Point(json.x, json.y);
     }
-    constructor(x, y) {
-        super();
-        this._x = x;
-        this._y = y;
-    }
 }
-__decorate$8([
+__decorate$7([
     nameForSerialization('x')
 ], Point.prototype, "_x", void 0);
-__decorate$8([
+__decorate$7([
     nameForSerialization('y')
 ], Point.prototype, "_y", void 0);
 class Quadrilateral extends DefaultSerializeable {
+    constructor(topLeft, topRight, bottomRight, bottomLeft) {
+        super();
+        this._topLeft = topLeft;
+        this._topRight = topRight;
+        this._bottomRight = bottomRight;
+        this._bottomLeft = bottomLeft;
+    }
     get topLeft() {
         return this._topLeft;
     }
@@ -167,24 +174,17 @@ class Quadrilateral extends DefaultSerializeable {
     static fromJSON(json) {
         return new Quadrilateral(Point.fromJSON(json.topLeft), Point.fromJSON(json.topRight), Point.fromJSON(json.bottomRight), Point.fromJSON(json.bottomLeft));
     }
-    constructor(topLeft, topRight, bottomRight, bottomLeft) {
-        super();
-        this._topLeft = topLeft;
-        this._topRight = topRight;
-        this._bottomRight = bottomRight;
-        this._bottomLeft = bottomLeft;
-    }
 }
-__decorate$8([
+__decorate$7([
     nameForSerialization('topLeft')
 ], Quadrilateral.prototype, "_topLeft", void 0);
-__decorate$8([
+__decorate$7([
     nameForSerialization('topRight')
 ], Quadrilateral.prototype, "_topRight", void 0);
-__decorate$8([
+__decorate$7([
     nameForSerialization('bottomRight')
 ], Quadrilateral.prototype, "_bottomRight", void 0);
-__decorate$8([
+__decorate$7([
     nameForSerialization('bottomLeft')
 ], Quadrilateral.prototype, "_bottomLeft", void 0);
 var MeasureUnit;
@@ -194,6 +194,11 @@ var MeasureUnit;
     MeasureUnit["Fraction"] = "fraction";
 })(MeasureUnit || (MeasureUnit = {}));
 class NumberWithUnit extends DefaultSerializeable {
+    constructor(value, unit) {
+        super();
+        this._value = value;
+        this._unit = unit;
+    }
     get value() {
         return this._value;
     }
@@ -203,19 +208,19 @@ class NumberWithUnit extends DefaultSerializeable {
     static fromJSON(json) {
         return new NumberWithUnit(json.value, json.unit);
     }
-    constructor(value, unit) {
-        super();
-        this._value = value;
-        this._unit = unit;
-    }
 }
-__decorate$8([
+__decorate$7([
     nameForSerialization('value')
 ], NumberWithUnit.prototype, "_value", void 0);
-__decorate$8([
+__decorate$7([
     nameForSerialization('unit')
 ], NumberWithUnit.prototype, "_unit", void 0);
 class PointWithUnit extends DefaultSerializeable {
+    constructor(x, y) {
+        super();
+        this._x = x;
+        this._y = y;
+    }
     get x() {
         return this._x;
     }
@@ -228,76 +233,76 @@ class PointWithUnit extends DefaultSerializeable {
     static get zero() {
         return new PointWithUnit(new NumberWithUnit(0, MeasureUnit.Pixel), new NumberWithUnit(0, MeasureUnit.Pixel));
     }
-    constructor(x, y) {
-        super();
-        this._x = x;
-        this._y = y;
-    }
 }
-__decorate$8([
+__decorate$7([
     nameForSerialization('x')
 ], PointWithUnit.prototype, "_x", void 0);
-__decorate$8([
+__decorate$7([
     nameForSerialization('y')
 ], PointWithUnit.prototype, "_y", void 0);
 class Rect extends DefaultSerializeable {
+    constructor(origin, size) {
+        super();
+        this._origin = origin;
+        this._size = size;
+    }
     get origin() {
         return this._origin;
     }
     get size() {
         return this._size;
     }
-    constructor(origin, size) {
-        super();
-        this._origin = origin;
-        this._size = size;
-    }
 }
-__decorate$8([
+__decorate$7([
     nameForSerialization('origin')
 ], Rect.prototype, "_origin", void 0);
-__decorate$8([
+__decorate$7([
     nameForSerialization('size')
 ], Rect.prototype, "_size", void 0);
 class RectWithUnit extends DefaultSerializeable {
+    constructor(origin, size) {
+        super();
+        this._origin = origin;
+        this._size = size;
+    }
     get origin() {
         return this._origin;
     }
     get size() {
         return this._size;
     }
-    constructor(origin, size) {
-        super();
-        this._origin = origin;
-        this._size = size;
-    }
 }
-__decorate$8([
+__decorate$7([
     nameForSerialization('origin')
 ], RectWithUnit.prototype, "_origin", void 0);
-__decorate$8([
+__decorate$7([
     nameForSerialization('size')
 ], RectWithUnit.prototype, "_size", void 0);
 class SizeWithUnit extends DefaultSerializeable {
+    constructor(width, height) {
+        super();
+        this._width = width;
+        this._height = height;
+    }
     get width() {
         return this._width;
     }
     get height() {
         return this._height;
     }
+}
+__decorate$7([
+    nameForSerialization('width')
+], SizeWithUnit.prototype, "_width", void 0);
+__decorate$7([
+    nameForSerialization('height')
+], SizeWithUnit.prototype, "_height", void 0);
+class Size extends DefaultSerializeable {
     constructor(width, height) {
         super();
         this._width = width;
         this._height = height;
     }
-}
-__decorate$8([
-    nameForSerialization('width')
-], SizeWithUnit.prototype, "_width", void 0);
-__decorate$8([
-    nameForSerialization('height')
-], SizeWithUnit.prototype, "_height", void 0);
-class Size extends DefaultSerializeable {
     get width() {
         return this._width;
     }
@@ -307,34 +312,29 @@ class Size extends DefaultSerializeable {
     static fromJSON(json) {
         return new Size(json.width, json.height);
     }
-    constructor(width, height) {
-        super();
-        this._width = width;
-        this._height = height;
-    }
 }
-__decorate$8([
+__decorate$7([
     nameForSerialization('width')
 ], Size.prototype, "_width", void 0);
-__decorate$8([
+__decorate$7([
     nameForSerialization('height')
 ], Size.prototype, "_height", void 0);
 class SizeWithAspect {
+    constructor(size, aspect) {
+        this._size = size;
+        this._aspect = aspect;
+    }
     get size() {
         return this._size;
     }
     get aspect() {
         return this._aspect;
     }
-    constructor(size, aspect) {
-        this._size = size;
-        this._aspect = aspect;
-    }
 }
-__decorate$8([
+__decorate$7([
     nameForSerialization('size')
 ], SizeWithAspect.prototype, "_size", void 0);
-__decorate$8([
+__decorate$7([
     nameForSerialization('aspect')
 ], SizeWithAspect.prototype, "_aspect", void 0);
 var SizingMode;
@@ -437,19 +437,26 @@ class SizeWithUnitAndAspect {
         }
     }
 }
-__decorate$8([
+__decorate$7([
     nameForSerialization('widthAndHeight')
 ], SizeWithUnitAndAspect.prototype, "_widthAndHeight", void 0);
-__decorate$8([
+__decorate$7([
     nameForSerialization('widthAndAspectRatio')
 ], SizeWithUnitAndAspect.prototype, "_widthAndAspectRatio", void 0);
-__decorate$8([
+__decorate$7([
     nameForSerialization('heightAndAspectRatio')
 ], SizeWithUnitAndAspect.prototype, "_heightAndAspectRatio", void 0);
-__decorate$8([
+__decorate$7([
     nameForSerialization('shorterDimensionAndAspectRatio')
 ], SizeWithUnitAndAspect.prototype, "_shorterDimensionAndAspectRatio", void 0);
 class MarginsWithUnit extends DefaultSerializeable {
+    constructor(left, right, top, bottom) {
+        super();
+        this._left = left;
+        this._right = right;
+        this._top = top;
+        this._bottom = bottom;
+    }
     get left() {
         return this._left;
     }
@@ -468,27 +475,23 @@ class MarginsWithUnit extends DefaultSerializeable {
     static get zero() {
         return new MarginsWithUnit(new NumberWithUnit(0, MeasureUnit.Pixel), new NumberWithUnit(0, MeasureUnit.Pixel), new NumberWithUnit(0, MeasureUnit.Pixel), new NumberWithUnit(0, MeasureUnit.Pixel));
     }
-    constructor(left, right, top, bottom) {
-        super();
-        this._left = left;
-        this._right = right;
-        this._top = top;
-        this._bottom = bottom;
-    }
 }
-__decorate$8([
+__decorate$7([
     nameForSerialization('left')
 ], MarginsWithUnit.prototype, "_left", void 0);
-__decorate$8([
+__decorate$7([
     nameForSerialization('right')
 ], MarginsWithUnit.prototype, "_right", void 0);
-__decorate$8([
+__decorate$7([
     nameForSerialization('top')
 ], MarginsWithUnit.prototype, "_top", void 0);
-__decorate$8([
+__decorate$7([
     nameForSerialization('bottom')
 ], MarginsWithUnit.prototype, "_bottom", void 0);
 class Color {
+    constructor(hex) {
+        this.hexadecimalString = hex;
+    }
     get redComponent() {
         return this.hexadecimalString.slice(0, 2);
     }
@@ -556,9 +559,6 @@ class Color {
         }
         return alpha;
     }
-    constructor(hex) {
-        this.hexadecimalString = hex;
-    }
     withAlpha(alpha) {
         const newHex = this.hexadecimalString.slice(0, 6) + Color.numberToHex(Color.normalizeAlpha(alpha));
         return Color.fromHex(newHex);
@@ -595,7 +595,7 @@ var LogoStyle;
     LogoStyle["Extended"] = "extended";
 })(LogoStyle || (LogoStyle = {}));
 
-var __decorate$7 = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
+var __decorate$6 = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
@@ -618,6 +618,11 @@ var LaserlineViewfinderStyle;
     LaserlineViewfinderStyle["Animated"] = "animated";
 })(LaserlineViewfinderStyle || (LaserlineViewfinderStyle = {}));
 class RectangularViewfinderAnimation extends DefaultSerializeable {
+    constructor(isLooping) {
+        super();
+        this._isLooping = false;
+        this._isLooping = isLooping;
+    }
     static fromJSON(json) {
         if (json === null) {
             return null;
@@ -627,13 +632,8 @@ class RectangularViewfinderAnimation extends DefaultSerializeable {
     get isLooping() {
         return this._isLooping;
     }
-    constructor(isLooping) {
-        super();
-        this._isLooping = false;
-        this._isLooping = isLooping;
-    }
 }
-__decorate$7([
+__decorate$6([
     nameForSerialization('isLooping')
 ], RectangularViewfinderAnimation.prototype, "_isLooping", void 0);
 
@@ -667,12 +667,6 @@ const Capacitor$1 = {
     exec: (success, error, functionName, args) => capacitorExec(success, error, pluginName$1, functionName, args),
 };
 
-var __decorate$6 = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
 var FrameSourceState;
 (function (FrameSourceState) {
     FrameSourceState["On"] = "on";
@@ -722,6 +716,23 @@ var PrivateCameraProperty;
     PrivateCameraProperty["CameraAPI"] = "api";
 })(PrivateCameraProperty || (PrivateCameraProperty = {}));
 class CameraSettings extends DefaultSerializeable {
+    constructor(settings) {
+        super();
+        this.preferredResolution = Capacitor$1.defaults.Camera.Settings.preferredResolution;
+        this.zoomFactor = Capacitor$1.defaults.Camera.Settings.zoomFactor;
+        this.zoomGestureZoomFactor = Capacitor$1.defaults.Camera.Settings.zoomGestureZoomFactor;
+        this.api = 0;
+        this.focus = {
+            range: Capacitor$1.defaults.Camera.Settings.focusRange,
+            focusGestureStrategy: Capacitor$1.defaults.Camera.Settings.focusGestureStrategy,
+            shouldPreferSmoothAutoFocus: Capacitor$1.defaults.Camera.Settings.shouldPreferSmoothAutoFocus,
+        };
+        if (settings !== undefined && settings !== null) {
+            Object.getOwnPropertyNames(settings).forEach(propertyName => {
+                this[propertyName] = settings[propertyName];
+            });
+        }
+    }
     get focusRange() {
         return this.focus.range;
     }
@@ -748,54 +759,18 @@ class CameraSettings extends DefaultSerializeable {
         settings.zoomGestureZoomFactor = json.zoomGestureZoomFactor;
         settings.focusGestureStrategy = json.focusGestureStrategy;
         settings.shouldPreferSmoothAutoFocus = json.shouldPreferSmoothAutoFocus;
-        if (json.properties != undefined) {
-            for (const key of Object.keys(json.properties)) {
-                settings.setProperty(key, json.properties[key]);
-            }
+        if (json.api !== undefined && json.api !== null) {
+            settings.api = json.api;
         }
         return settings;
     }
-    constructor(settings) {
-        super();
-        this.focusHiddenProperties = [
-            'range',
-            'manualLensPosition',
-            'shouldPreferSmoothAutoFocus',
-            'focusStrategy',
-            'focusGestureStrategy'
-        ];
-        this.preferredResolution = Capacitor$1.defaults.Camera.Settings.preferredResolution;
-        this.zoomFactor = Capacitor$1.defaults.Camera.Settings.zoomFactor;
-        this.zoomGestureZoomFactor = Capacitor$1.defaults.Camera.Settings.zoomGestureZoomFactor;
-        this.api = 0;
-        this.focus = {
-            range: Capacitor$1.defaults.Camera.Settings.focusRange,
-            focusGestureStrategy: Capacitor$1.defaults.Camera.Settings.focusGestureStrategy,
-            shouldPreferSmoothAutoFocus: Capacitor$1.defaults.Camera.Settings.shouldPreferSmoothAutoFocus,
-        };
-        if (settings !== undefined && settings !== null) {
-            Object.getOwnPropertyNames(settings).forEach(propertyName => {
-                this[propertyName] = settings[propertyName];
-            });
-        }
-    }
     setProperty(name, value) {
-        if (this.focusHiddenProperties.includes(name)) {
-            this.focus[name] = value;
-            return;
-        }
         this[name] = value;
     }
     getProperty(name) {
-        if (this.focusHiddenProperties.includes(name)) {
-            return this.focus[name];
-        }
         return this[name];
     }
 }
-__decorate$6([
-    ignoreFromSerialization
-], CameraSettings.prototype, "focusHiddenProperties", void 0);
 class ImageBuffer {
     get width() {
         return this._width;
@@ -897,8 +872,15 @@ class CameraProxy {
         return proxy;
     }
     static getLastFrame() {
-        return new Promise(resolve => window.Capacitor.Plugins[Capacitor$1.pluginName][CapacitorFunction$1.GetLastFrame]().then((result) => {
-            resolve(PrivateFrameData.fromJSON(JSON.parse(result.data)));
+        return new Promise(resolve => window.Capacitor.Plugins[Capacitor$1.pluginName][CapacitorFunction$1.GetLastFrame]().then((frameDataJSONString) => {
+            let parsedData;
+            if (frameDataJSONString.data) {
+                parsedData = JSON.parse(frameDataJSONString.data);
+            }
+            else {
+                parsedData = frameDataJSONString;
+            }
+            resolve(PrivateFrameData.fromJSON(parsedData));
         }));
     }
     static getLastFrameOrNull() {
@@ -907,19 +889,17 @@ class CameraProxy {
             if (!frameDataJSONString) {
                 return resolve(null);
             }
-            resolve(PrivateFrameData.fromJSON(JSON.parse(frameDataJSONString.data)));
+            resolve(PrivateFrameData.fromJSON(JSON.parse(frameDataJSONString)));
         }));
     }
     getCurrentState() {
         return new Promise((resolve, reject) => window.Capacitor.Plugins[Capacitor$1.pluginName][CapacitorFunction$1.GetCurrentCameraState]()
-            .then((result) => {
-            resolve(result.data);
-        }, reject));
+            .then(resolve, reject));
     }
     getIsTorchAvailable() {
         return new Promise((resolve, reject) => window.Capacitor.Plugins[Capacitor$1.pluginName][CapacitorFunction$1.GetIsTorchAvailable]({
             position: this.camera.position,
-        }).then((result) => { resolve(result.data); }, reject));
+        }).then(resolve, reject));
     }
 }
 
@@ -947,6 +927,10 @@ var VibrationType;
     VibrationType["successHaptic"] = "successHaptic";
 })(VibrationType || (VibrationType = {}));
 class Vibration extends DefaultSerializeable {
+    constructor(type) {
+        super();
+        this.type = type;
+    }
     static fromJSON(json) {
         return new Vibration(json.type);
     }
@@ -959,28 +943,32 @@ class Vibration extends DefaultSerializeable {
     static get successHapticFeedback() {
         return new Vibration(VibrationType.successHaptic);
     }
-    constructor(type) {
-        super();
-        this.type = type;
-    }
 }
 class Sound extends DefaultSerializeable {
+    constructor(resource) {
+        super();
+        this.resource = null;
+        this.resource = resource;
+    }
     static fromJSON(json) {
         return new Sound(json.resource);
     }
     static get defaultSound() {
         return new Sound(null);
     }
-    constructor(resource) {
-        super();
-        this.resource = null;
-        this.resource = resource;
-    }
 }
 __decorate$5([
     ignoreFromSerializationIfNull
 ], Sound.prototype, "resource", void 0);
 class Feedback extends DefaultSerializeable {
+    constructor(vibration, sound) {
+        super();
+        this._vibration = null;
+        this._sound = null;
+        this._vibration = vibration;
+        this._sound = sound;
+        this.initialize();
+    }
     static get defaultFeedback() {
         return new Feedback(Vibration.defaultVibration, Sound.defaultSound);
     }
@@ -992,14 +980,6 @@ class Feedback extends DefaultSerializeable {
     }
     get sound() {
         return this._sound;
-    }
-    constructor(vibration, sound) {
-        super();
-        this._vibration = null;
-        this._sound = null;
-        this._vibration = vibration;
-        this._sound = sound;
-        this.initialize();
     }
     emit() {
         if (!this.proxy) {
@@ -1033,6 +1013,11 @@ var __decorate$4 = (undefined && undefined.__decorate) || function (decorators, 
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 class Brush extends DefaultSerializeable {
+    constructor(fillColor = Capacitor$1.defaults.Brush.fillColor, strokeColor = Capacitor$1.defaults.Brush.strokeColor, strokeWidth = Capacitor$1.defaults.Brush.strokeWidth) {
+        super();
+        this.fill = { color: fillColor };
+        this.stroke = { color: strokeColor, width: strokeWidth };
+    }
     static get transparent() {
         const transparentBlack = Color.fromRGBA(255, 255, 255, 0);
         return new Brush(transparentBlack, transparentBlack, 0);
@@ -1045,11 +1030,6 @@ class Brush extends DefaultSerializeable {
     }
     get strokeWidth() {
         return this.stroke.width;
-    }
-    constructor(fillColor = Capacitor$1.defaults.Brush.fillColor, strokeColor = Capacitor$1.defaults.Brush.strokeColor, strokeWidth = Capacitor$1.defaults.Brush.strokeWidth) {
-        super();
-        this.fill = { color: fillColor };
-        this.stroke = { color: strokeColor, width: strokeWidth };
     }
 }
 // tslint:disable-next-line:variable-name
@@ -1072,9 +1052,6 @@ __decorate$4([
     nameForSerialization('style')
 ], LaserlineViewfinder.prototype, "_style", void 0);
 class RectangularViewfinder extends DefaultSerializeable {
-    get sizeWithUnitAndAspect() {
-        return this._sizeWithUnitAndAspect;
-    }
     constructor(style, lineStyle) {
         super();
         this.type = 'rectangular';
@@ -1090,6 +1067,9 @@ class RectangularViewfinder extends DefaultSerializeable {
         if (lineStyle !== undefined) {
             this._lineStyle = lineStyle;
         }
+    }
+    get sizeWithUnitAndAspect() {
+        return this._sizeWithUnitAndAspect;
     }
     get style() {
         return this._style;
@@ -1179,6 +1159,13 @@ class TextCaptureFeedback extends DefaultSerializeable {
     }
 }
 class TextCaptureOverlay extends DefaultSerializeable {
+    constructor() {
+        super();
+        this.type = 'textCapture';
+        this._shouldShowScanAreaGuides = false;
+        this._viewfinder = null;
+        this._brush = TextCaptureOverlay.defaultBrush;
+    }
     static get defaultBrush() {
         return new Brush(Capacitor.defaults.TextCapture.TextCaptureOverlay.DefaultBrush.fillColor, Capacitor.defaults.TextCapture.TextCaptureOverlay.DefaultBrush.strokeColor, Capacitor.defaults.TextCapture.TextCaptureOverlay.DefaultBrush.strokeWidth);
     }
@@ -1213,13 +1200,6 @@ class TextCaptureOverlay extends DefaultSerializeable {
             view.addOverlay(overlay);
         }
         return overlay;
-    }
-    constructor() {
-        super();
-        this.type = 'textCapture';
-        this._shouldShowScanAreaGuides = false;
-        this._viewfinder = null;
-        this._brush = TextCaptureOverlay.defaultBrush;
     }
 }
 __decorate$3([
@@ -1391,13 +1371,13 @@ var __decorate$1 = (undefined && undefined.__decorate) || function (decorators, 
 // tslint:disable-next-line:variable-name
 const NoneLocationSelection = { type: 'none' };
 class RadiusLocationSelection extends DefaultSerializeable {
-    get radius() {
-        return this._radius;
-    }
     constructor(radius) {
         super();
         this.type = 'radius';
         this._radius = radius;
+    }
+    get radius() {
+        return this._radius;
     }
 }
 __decorate$1([
@@ -1440,18 +1420,18 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 class TextCaptureSettings extends DefaultSerializeable {
+    constructor() {
+        super();
+        this.duplicateFilter = Capacitor.defaults.TextCapture.TextCaptureSettings.duplicateFilter;
+        this.locationSelection = null;
+        this.recognitionDirection = Capacitor.defaults.TextCapture.TextCaptureSettings.recognitionDirection;
+    }
     static fromJSON(json) {
         const settings = new TextCaptureSettings();
         Object.keys(json).forEach(key => {
             settings[key] = json[key];
         });
         return settings;
-    }
-    constructor() {
-        super();
-        this.duplicateFilter = Capacitor.defaults.TextCapture.TextCaptureSettings.duplicateFilter;
-        this.locationSelection = null;
-        this.recognitionDirection = Capacitor.defaults.TextCapture.TextCaptureSettings.recognitionDirection;
     }
 }
 __decorate([
