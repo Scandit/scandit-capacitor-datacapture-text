@@ -36,12 +36,12 @@ struct TextCaptureCallbackResult: BlockingListenerCallbackResult {
 }
 
 @objc(ScanditTextNative)
-public class ScanditTextNative: CAPPlugin, DataCapturePlugin {
+public class ScanditTextNative: CAPPlugin {
 
-    lazy public var modeDeserializers: [DataCaptureModeDeserializer] = {
+    lazy var modeDeserializer: TextCaptureDeserializer = {
         let textCaptureDeserializer = TextCaptureDeserializer()
         textCaptureDeserializer.delegate = self
-        return [textCaptureDeserializer]
+        return textCaptureDeserializer
     }()
 
     lazy public var componentDeserializers: [DataCaptureComponentDeserializer] = []
@@ -51,7 +51,7 @@ public class ScanditTextNative: CAPPlugin, DataCapturePlugin {
     lazy var callbackLocks = CallbackLocks()
 
     override public func load() {
-        ScanditCaptureCore.dataCapturePlugins.append(self as DataCapturePlugin)
+        ScanditCapacitorCore.registerModeDeserializer(modeDeserializer)
     }
 
     // MARK: Listeners

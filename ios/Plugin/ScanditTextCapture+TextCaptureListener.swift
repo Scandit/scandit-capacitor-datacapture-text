@@ -15,8 +15,8 @@ extension ScanditTextNative: TextCaptureListener {
             return
         }
 
-        ScanditCaptureCore.lastFrame = frameData
-        defer { ScanditCaptureCore.lastFrame = nil }
+        ScanditCapacitorCore.lastFrame = frameData
+        defer { ScanditCapacitorCore.lastFrame = nil }
 
         let listenerEvent = ListenerEvent(name: .didCaptureInTextCapture,
                                           argument: ["session": session.jsonString],
