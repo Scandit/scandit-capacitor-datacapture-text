@@ -34,6 +34,13 @@ export class TextCaptureFeedback extends DefaultSerializeable {
     }
 }
 export class TextCaptureOverlay extends DefaultSerializeable {
+    constructor() {
+        super();
+        this.type = 'textCapture';
+        this._shouldShowScanAreaGuides = false;
+        this._viewfinder = null;
+        this._brush = TextCaptureOverlay.defaultBrush;
+    }
     static get defaultBrush() {
         return new Brush(Capacitor.defaults.TextCapture.TextCaptureOverlay.DefaultBrush.fillColor, Capacitor.defaults.TextCapture.TextCaptureOverlay.DefaultBrush.strokeColor, Capacitor.defaults.TextCapture.TextCaptureOverlay.DefaultBrush.strokeWidth);
     }
@@ -68,13 +75,6 @@ export class TextCaptureOverlay extends DefaultSerializeable {
             view.addOverlay(overlay);
         }
         return overlay;
-    }
-    constructor() {
-        super();
-        this.type = 'textCapture';
-        this._shouldShowScanAreaGuides = false;
-        this._viewfinder = null;
-        this._brush = TextCaptureOverlay.defaultBrush;
     }
 }
 __decorate([
