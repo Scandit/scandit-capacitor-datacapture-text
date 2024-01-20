@@ -1,6 +1,6 @@
-import { CameraSettings } from '../../../../scandit-capacitor-datacapture-core/src/ts/Camera+Related';
-import { Color, Direction } from '../../../../scandit-capacitor-datacapture-core/src/ts/Common';
-import { CameraSettingsDefaultsJSON } from '../../../../scandit-capacitor-datacapture-core/src/ts/Capacitor/Defaults';
+import { CameraSettings } from 'scandit-datacapture-frameworks-core';
+import { Color, Direction } from 'scandit-datacapture-frameworks-core';
+import { CameraSettingsJSON } from 'scandit-datacapture-frameworks-core';
 export interface Defaults {
     TextCapture: {
         TextCaptureOverlay: {
@@ -30,7 +30,7 @@ export interface DefaultsJSON {
             recognitionDirection: string;
             duplicateFilter: number;
         };
-        RecommendedCameraSettings: CameraSettingsDefaultsJSON;
+        RecommendedCameraSettings: CameraSettingsJSON;
     };
 }
 export declare const defaultsFromJSON: (json: DefaultsJSON) => Defaults;

@@ -28,6 +28,7 @@ import com.scandit.capacitor.datacapture.text.handlers.TextCaptureHandler
 import com.scandit.datacapture.core.data.FrameData
 import com.scandit.datacapture.core.json.JsonValue
 import com.scandit.datacapture.frameworks.core.deserialization.Deserializers
+import com.scandit.datacapture.frameworks.core.utils.DefaultLastFrameData
 import com.scandit.datacapture.frameworks.core.utils.LastFrameData
 import com.scandit.datacapture.text.capture.TextCapture
 import com.scandit.datacapture.text.capture.TextCaptureListener
@@ -40,7 +41,10 @@ import org.json.JSONException
 import org.json.JSONObject
 
 @CapacitorPlugin(name = "ScanditTextNative")
-class ScanditTextNative :
+class ScanditTextNative (
+    private val lastFrameData: LastFrameData = DefaultLastFrameData.getInstance(),
+    private val textCaptureDeserializer: TextCaptureDeserializer = TextCaptureDeserializer()
+) :
     Plugin(),
     com.scandit.capacitor.datacapture.text.CapacitorPlugin,
     TextCaptureDeserializerListener,
@@ -50,8 +54,6 @@ class ScanditTextNative :
     private val textCaptureHandler: TextCaptureHandler = TextCaptureHandler(this)
 
     private var lastTextCaptureEnabledState: Boolean = false
-
-    private val textCaptureDeserializer = TextCaptureDeserializer()
 
     companion object {
         private const val FIELD_RESULT = "result"
@@ -153,9 +155,9 @@ class ScanditTextNative :
     }
 
     override fun onTextCaptured(mode: TextCapture, session: TextCaptureSession, data: FrameData) {
-        LastFrameData.frameData.set(data)
+        lastFrameData.frameData.set(data)
         textCaptureCallback?.onTextCaptured(mode, session, data)
-        LastFrameData.frameData.set(null)
+        lastFrameData.frameData.set(null)
     }
 
     private fun isFinishTextCaptureModeCallback(data: JSONObject) =
