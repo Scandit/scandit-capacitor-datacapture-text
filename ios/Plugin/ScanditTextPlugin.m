@@ -12,4 +12,8 @@
 CAP_PLUGIN(ScanditTextNative, "ScanditTextNative",
            CAP_PLUGIN_METHOD(getDefaults, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(subscribeTextCaptureListener, CAPPluginReturnPromise);
-           CAP_PLUGIN_METHOD(finishCallback, CAPPluginReturnPromise);)
+           CAP_PLUGIN_METHOD(finishCallback, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(setModeEnabledState, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(updateTextCaptureOverlay, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(updateTextCaptureMode, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(applyTextCaptureModeSettings, CAPPluginReturnPromise);)

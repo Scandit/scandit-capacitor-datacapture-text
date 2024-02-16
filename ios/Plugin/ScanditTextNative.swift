@@ -6,17 +6,9 @@
 
 import Foundation
 import Capacitor
-import ScanditCaptureCore
 import ScanditCapacitorDatacaptureCore
-import ScanditTextCapture
-
-class TextCaptureCallbacks {
-    var textCaptureListener: Callback?
-
-    func reset() {
-        textCaptureListener = nil
-    }
-}
+import ScanditFrameworksCore
+import ScanditFrameworksText
 
 struct TextCaptureCallbackResult: BlockingListenerCallbackResult {
     struct ResultJSON: Decodable {
@@ -37,28 +29,26 @@ struct TextCaptureCallbackResult: BlockingListenerCallbackResult {
 
 @objc(ScanditTextNative)
 public class ScanditTextNative: CAPPlugin {
-
-    lazy var modeDeserializer: TextCaptureDeserializer = {
-        let textCaptureDeserializer = TextCaptureDeserializer()
-        textCaptureDeserializer.delegate = self
-        return textCaptureDeserializer
-    }()
-
-    lazy public var componentDeserializers: [DataCaptureComponentDeserializer] = []
-    lazy public var components: [DataCaptureComponent] = []
-
-    lazy var callbacks = TextCaptureCallbacks()
-    lazy var callbackLocks = CallbackLocks()
+    var textModule: TextCaptureModule!
 
     override public func load() {
-        ScanditCapacitorCore.registerModeDeserializer(modeDeserializer)
+        textModule = TextCaptureModule(
+            textCaptureListener: FrameworksTextCaptureListener(
+                emitter: CapacitorEventEmitter(with: self)
+            )
+        )
+        textModule.didStart()
+    }
+
+    func onReset() {
+        textModule.didStop()
     }
 
     // MARK: Listeners
 
     @objc(subscribeTextCaptureListener:)
     func subscribeTextCaptureListener(_ call: CAPPluginCall) {
-        callbacks.textCaptureListener = Callback(id: call.callbackId)
+        textModule.addListener()
         call.resolve()
     }
 
@@ -66,28 +56,9 @@ public class ScanditTextNative: CAPPlugin {
 
     @objc(getDefaults:)
     func getDefaults(_ call: CAPPluginCall) {
-        DispatchQueue.main.async {
-            guard let settings = try? TextCaptureSettings(jsonString: "{}") else {
-                fatalError("Could not create default text capture settings, so defaults can not be created")
-            }
-
-            let textCapture = TextCapture(context: nil, settings: settings)
-            let overlay = TextCaptureOverlay(textCapture: textCapture)
-
-            let defaults = ScanditTextCaptureDefaults(textCaptureSettings: settings, overlay: overlay)
-
-            var defaultsDictionary: [String: Any]? {
-                    guard let data = try? JSONEncoder().encode(defaults) else {
-                        return nil
-                    }
-                    guard let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] else
-                    {
-                        return nil
-                    }
-                    return json
-                }
-
-            call.resolve(defaultsDictionary ?? [:])
+        dispatchMain { [weak self] in
+            guard let self = self else { return }
+            call.resolve(["TextCapture": self.textModule.defaults.toEncodable()])
         }
     }
 
@@ -97,41 +68,47 @@ public class ScanditTextNative: CAPPlugin {
             call.reject(CommandError.invalidJSON.toJSONString())
             return
         }
-
-        guard let finishCallbackId = resultObject["finishCallbackID"] else {
+        
+        guard let enabled = resultObject["enabled"] as? Bool else {
             call.reject(CommandError.invalidJSON.toJSONString())
             return
         }
 
-        guard let result = TextCaptureCallbackResult.from(([
-            "finishCallbackID": finishCallbackId,
-            "result": resultObject] as NSDictionary).jsonString) else {
-            call.reject(CommandError.invalidJSON.toJSONString())
-            return
-        }
-        callbackLocks.setResult(result, for: result.finishCallbackID)
-        callbackLocks.release(for: result.finishCallbackID)
+        textModule.finishDidCaptureText(enabled: enabled)
         call.resolve()
     }
 
-    func waitForFinished(_ listenerEvent: ListenerEvent, callbackId: String) {
-        callbackLocks.wait(for: listenerEvent.name, afterDoing: {
-            self.notifyListeners(listenerEvent.name.rawValue, data: listenerEvent.resultMessage as? [String: Any])
-        })
+        
+    @objc(setModeEnabledState:)
+    func setModeEnabledState(_ call: CAPPluginCall) {
+        textModule.setModeEnabled(enabled: call.getBool("enabled", false))
+        call.resolve()
     }
-
-    func finishBlockingCallback(with mode: DataCaptureMode, for listenerEvent: ListenerEvent) {
-        defer {
-            callbackLocks.clearResult(for: listenerEvent.name)
-        }
-
-        guard let result = callbackLocks.getResult(for: listenerEvent.name) as? TextCaptureCallbackResult,
-            let enabled = result.enabled else {
+    
+    @objc(updateTextCaptureOverlay:)
+    func updateTextCaptureOverlay(_ call: CAPPluginCall) {
+        guard let overlayJson = call.getString("overlayJson") else {
+            call.reject(CommandError.invalidJSON.toJSONString())
             return
         }
-
-        if enabled != mode.isEnabled {
-            mode.isEnabled = enabled
+        textModule.updateOverlay(overlayJson: overlayJson, result: CapacitorResult(call))
+    }
+    
+    @objc(updateTextCaptureMode:)
+    func updateTextCaptureMode(_ call: CAPPluginCall) {
+        guard let modeJson = call.getString("modeJson") else {
+            call.reject(CommandError.invalidJSON.toJSONString())
+            return
         }
+        textModule.updateModeFromJson(modeJson: modeJson, result: CapacitorResult(call))
+    }
+    
+    @objc(applyTextCaptureModeSettings:)
+    func applyTextCaptureModeSettings(_ call: CAPPluginCall) {
+        guard let modeSettingsJson = call.getString("modeSettingsJson") else {
+            call.reject(CommandError.invalidJSON.toJSONString())
+            return
+        }
+        textModule.applyModeSettings(modeSettingsJson: modeSettingsJson, result: CapacitorResult(call))
     }
 }

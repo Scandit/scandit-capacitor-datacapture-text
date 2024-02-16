@@ -20,7 +20,7 @@ export interface Defaults {
 export interface DefaultsJSON {
     TextCapture: {
         TextCaptureOverlay: {
-            DefaultBrush: {
+            Brush: {
                 fillColor: string;
                 strokeColor: string;
                 strokeWidth: number;
