@@ -8,10 +8,10 @@ const defaultsFromJSON = (json) => {
             TextCaptureOverlay: {
                 DefaultBrush: {
                     fillColor: Color
-                        .fromJSON(json.TextCapture.TextCaptureOverlay.Brush.fillColor),
+                        .fromJSON(json.TextCapture.TextCaptureOverlay.DefaultBrush.fillColor),
                     strokeColor: Color
-                        .fromJSON(json.TextCapture.TextCaptureOverlay.Brush.strokeColor),
-                    strokeWidth: json.TextCapture.TextCaptureOverlay.Brush.strokeWidth,
+                        .fromJSON(json.TextCapture.TextCaptureOverlay.DefaultBrush.strokeColor),
+                    strokeWidth: json.TextCapture.TextCaptureOverlay.DefaultBrush.strokeWidth,
                 },
             },
             TextCaptureSettings: {
@@ -35,10 +35,6 @@ var CapacitorFunction;
 (function (CapacitorFunction) {
     CapacitorFunction["GetDefaults"] = "getDefaults";
     CapacitorFunction["SubscribeTextCaptureListener"] = "subscribeTextCaptureListener";
-    CapacitorFunction["SetModeEnabledState"] = "setModeEnabledState";
-    CapacitorFunction["UpdateTextCaptureOverlay"] = "updateTextCaptureOverlay";
-    CapacitorFunction["UpdateTextCaptureMode"] = "updateTextCaptureMode";
-    CapacitorFunction["ApplyTextCaptureModeSettings"] = "applyTextCaptureModeSettings";
 })(CapacitorFunction || (CapacitorFunction = {}));
 const getDefaults = async () => {
     await window.Capacitor.Plugins[pluginName][CapacitorFunction.GetDefaults]()
@@ -130,21 +126,21 @@ class TextCaptureOverlay extends DefaultSerializeable {
     }
     set brush(newBrush) {
         this._brush = newBrush;
-        this.textCapture.listenerProxy.updateTextCaptureOverlay(this);
+        this.textCapture.didChange();
     }
     get viewfinder() {
         return this._viewfinder;
     }
     set viewfinder(newViewfinder) {
         this._viewfinder = newViewfinder;
-        this.textCapture.listenerProxy.updateTextCaptureOverlay(this);
+        this.textCapture.didChange();
     }
     get shouldShowScanAreaGuides() {
         return this._shouldShowScanAreaGuides;
     }
     set shouldShowScanAreaGuides(shouldShow) {
         this._shouldShowScanAreaGuides = shouldShow;
-        this.textCapture.listenerProxy.updateTextCaptureOverlay(this);
+        this.textCapture.didChange();
     }
     static withTextCapture(textCapture) {
         return TextCaptureOverlay.withTextCaptureForView(textCapture, null);
@@ -184,7 +180,7 @@ __decorate([
 
 var TextCaptureListenerEvent;
 (function (TextCaptureListenerEvent) {
-    TextCaptureListenerEvent["DidCapture"] = "TextCaptureListener.didCaptureText";
+    TextCaptureListenerEvent["DidCapture"] = "didCaptureInTextCapture";
 })(TextCaptureListenerEvent || (TextCaptureListenerEvent = {}));
 class TextCaptureListenerProxy {
     static forTextCapture(textCapture) {
@@ -195,34 +191,6 @@ class TextCaptureListenerProxy {
     }
     initialize() {
         this.subscribeListener();
-    }
-    updateTextCaptureMode() {
-        return new Promise((resolve, reject) => {
-            TextCaptureListenerProxy.capacitorExec(resolve, reject, CapacitorFunction.UpdateTextCaptureMode, {
-                modeJson: JSON.stringify(this.textCapture.toJSON())
-            });
-        });
-    }
-    applyTextCaptureModeSettings(newSettings) {
-        return new Promise((resolve, reject) => {
-            TextCaptureListenerProxy.capacitorExec(resolve, reject, CapacitorFunction.ApplyTextCaptureModeSettings, {
-                modeSettingsJson: JSON.stringify(newSettings.toJSON())
-            });
-        });
-    }
-    updateTextCaptureOverlay(overlay) {
-        return new Promise((resolve, reject) => {
-            TextCaptureListenerProxy.capacitorExec(resolve, reject, CapacitorFunction.UpdateTextCaptureOverlay, {
-                overlayJson: JSON.stringify(overlay.toJSON())
-            });
-        });
-    }
-    setModeEnabledState(enabled) {
-        return new Promise((resolve, reject) => {
-            TextCaptureListenerProxy.capacitorExec(resolve, reject, CapacitorFunction.SetModeEnabledState, {
-                enabled: enabled
-            });
-        });
     }
     subscribeListener() {
         TextCaptureListenerProxy.capacitorExec(this.notifyListeners.bind(this), null, CapacitorFunction.SubscribeTextCaptureListener, null);
@@ -235,6 +203,7 @@ class TextCaptureListenerProxy {
             window.Capacitor.Plugins[Capacitor.pluginName].finishCallback({
                 result: {
                     enabled: this.textCapture.isEnabled,
+                    finishCallbackID: event.name,
                 },
             });
             return { enabled: this.textCapture.isEnabled };
@@ -251,7 +220,7 @@ class TextCaptureListenerProxy {
                 case TextCaptureListenerEvent.DidCapture:
                     if (listener.didCaptureText) {
                         listener.didCaptureText(this.textCapture, TextCaptureSession
-                            .fromJSON(JSON.parse(event.session)), CameraController.getLastFrame);
+                            .fromJSON(JSON.parse(event.argument.session)), CameraController.getLastFrame);
                     }
                     break;
             }
@@ -269,6 +238,7 @@ class TextCapture extends DefaultSerializeable {
         this._feedback = TextCaptureFeedback.default;
         this._context = null;
         this.listeners = [];
+        this.listenerProxy = null;
         this.isInListenerCallback = false;
     }
     get isEnabled() {
@@ -276,7 +246,11 @@ class TextCapture extends DefaultSerializeable {
     }
     set isEnabled(isEnabled) {
         this._isEnabled = isEnabled;
-        this.listenerProxy.setModeEnabledState(isEnabled);
+        if (!this.isInListenerCallback) {
+            // If we're "in" a listener callback, we don't want to deserialize the context to update the enabled state,
+            // but rather pass that back to be applied in the native callback.
+            this.didChange();
+        }
     }
     get context() {
         return this._context;
@@ -289,7 +263,7 @@ class TextCapture extends DefaultSerializeable {
     }
     set feedback(feedback) {
         this._feedback = feedback;
-        this.listenerProxy.updateTextCaptureMode();
+        this.didChange();
     }
     static forContext(context, settings) {
         const textCapture = new TextCapture();
@@ -302,7 +276,7 @@ class TextCapture extends DefaultSerializeable {
     }
     applySettings(settings) {
         this.settings = settings;
-        return this.listenerProxy.applyTextCaptureModeSettings(settings);
+        return this.didChange();
     }
     addListener(listener) {
         if (this.listeners.includes(listener)) {
@@ -316,9 +290,17 @@ class TextCapture extends DefaultSerializeable {
         }
         this.listeners.splice(this.listeners.indexOf(listener), 1);
     }
+    didChange() {
+        if (this.context) {
+            return this.context.update();
+        }
+        else {
+            return Promise.resolve();
+        }
+    }
 }
 __decorate([
-    ignoreFromSerialization
+    nameForSerialization('enabled')
 ], TextCapture.prototype, "_isEnabled", void 0);
 __decorate([
     nameForSerialization('feedback')

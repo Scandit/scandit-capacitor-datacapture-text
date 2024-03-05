@@ -1,6 +1,6 @@
 {
   "name": "scandit-capacitor-datacapture-text",
-  "version": "6.22.0",
+  "version": "6.21.3",
   "description": "Scandit Data Capture SDK for Capacitor",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -58,8 +58,8 @@
     "@typescript-eslint/eslint-plugin": "5.57.1"
   },
   "dependencies": {
-    "scandit-capacitor-datacapture-core": "6.22.0",
-    "scandit-datacapture-frameworks-core": "6.22.0"
+    "scandit-capacitor-datacapture-core": "6.21.3",
+    "scandit-datacapture-frameworks-core": "6.21.3"
   },
   "prettier": "@ionic/prettier-config",
   "swiftlint": "@ionic/swiftlint-config",
