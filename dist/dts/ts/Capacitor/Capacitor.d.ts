@@ -10,6 +10,10 @@ export interface CapacitorWindow extends Window {
 }
 export declare enum CapacitorFunction {
     GetDefaults = "getDefaults",
-    SubscribeTextCaptureListener = "subscribeTextCaptureListener"
+    SubscribeTextCaptureListener = "subscribeTextCaptureListener",
+    SetModeEnabledState = "setModeEnabledState",
+    UpdateTextCaptureOverlay = "updateTextCaptureOverlay",
+    UpdateTextCaptureMode = "updateTextCaptureMode",
+    ApplyTextCaptureModeSettings = "applyTextCaptureModeSettings"
 }
 export declare const getDefaults: () => Promise<Defaults>;

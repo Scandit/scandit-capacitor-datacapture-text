@@ -13,83 +13,42 @@ import com.getcapacitor.PluginCall
 import com.getcapacitor.PluginMethod
 import com.getcapacitor.annotation.CapacitorPlugin
 import com.scandit.capacitor.datacapture.core.ScanditCaptureCoreNative
-import com.scandit.capacitor.datacapture.core.data.SerializableCallbackAction.Companion.FIELD_FINISH_CALLBACK_ID
-import com.scandit.capacitor.datacapture.core.data.SerializableFinishModeCallbackData
-import com.scandit.capacitor.datacapture.core.data.defaults.SerializableBrushDefaults
-import com.scandit.capacitor.datacapture.core.data.defaults.SerializableCameraSettingsDefault
 import com.scandit.capacitor.datacapture.core.errors.JsonParseError
-import com.scandit.capacitor.datacapture.text.callbacks.TextCaptureCallback
-import com.scandit.capacitor.datacapture.text.callbacks.TextCaptureCallback.Companion.ACTION_TEXT_CAPTURED
-import com.scandit.capacitor.datacapture.text.data.defaults.SerializableTextCaptureDefaults
-import com.scandit.capacitor.datacapture.text.data.defaults.SerializableTextCaptureOverlayDefaults
-import com.scandit.capacitor.datacapture.text.data.defaults.SerializableTextCaptureSettingsDefaults
-import com.scandit.capacitor.datacapture.text.data.defaults.SerializableTextDefaults
-import com.scandit.capacitor.datacapture.text.handlers.TextCaptureHandler
-import com.scandit.datacapture.core.data.FrameData
-import com.scandit.datacapture.core.json.JsonValue
-import com.scandit.datacapture.frameworks.core.deserialization.Deserializers
-import com.scandit.datacapture.frameworks.core.utils.DefaultLastFrameData
-import com.scandit.datacapture.frameworks.core.utils.LastFrameData
-import com.scandit.datacapture.text.capture.TextCapture
-import com.scandit.datacapture.text.capture.TextCaptureListener
-import com.scandit.datacapture.text.capture.TextCaptureSession
-import com.scandit.datacapture.text.capture.TextCaptureSettings
-import com.scandit.datacapture.text.capture.serialization.TextCaptureDeserializer
-import com.scandit.datacapture.text.capture.serialization.TextCaptureDeserializerListener
-import com.scandit.datacapture.text.ui.TextCaptureOverlay
+import com.scandit.capacitor.datacapture.core.utils.CapacitorNoopResult
+import com.scandit.capacitor.datacapture.core.utils.CapacitorResult
+import com.scandit.datacapture.frameworks.core.events.Emitter
+import com.scandit.datacapture.frameworks.text.TextCaptureModule
+import com.scandit.datacapture.frameworks.text.listeners.FrameworksTextCaptureListener
 import org.json.JSONException
 import org.json.JSONObject
 
 @CapacitorPlugin(name = "ScanditTextNative")
-class ScanditTextNative (
-    private val lastFrameData: LastFrameData = DefaultLastFrameData.getInstance(),
-    private val textCaptureDeserializer: TextCaptureDeserializer = TextCaptureDeserializer()
-) :
-    Plugin(),
-    com.scandit.capacitor.datacapture.text.CapacitorPlugin,
-    TextCaptureDeserializerListener,
-    TextCaptureListener {
+class ScanditTextNative : Plugin(), Emitter {
 
-    private var textCaptureCallback: TextCaptureCallback? = null
-    private val textCaptureHandler: TextCaptureHandler = TextCaptureHandler(this)
+    private val textCaptureModule = TextCaptureModule(FrameworksTextCaptureListener(this))
 
     private var lastTextCaptureEnabledState: Boolean = false
 
-    companion object {
-        private const val FIELD_RESULT = "result"
-        private const val CORE_PLUGIN_NAME = "ScanditCaptureCoreNative"
-    }
-
     @PluginMethod
     fun getDefaults(call: PluginCall) {
-        try {
-            val defaults = SerializableTextDefaults(
-                textCaptureDefaults = SerializableTextCaptureDefaults(
-                    textCaptureOverlayDefaults = SerializableTextCaptureOverlayDefaults(
-                        brushDefaults = SerializableBrushDefaults(
-                            TextCaptureOverlay.defaultBrush()
-                        )
-                    ),
-                    textCaptureSettingsDefaults = SerializableTextCaptureSettingsDefaults(
-                        TextCaptureSettings.fromJson("{}")
-                    ),
-                    recommendedCameraSettings = SerializableCameraSettingsDefault(
-                        TextCapture.createRecommendedCameraSettings()
-                    )
-                )
+        val defaults = textCaptureModule.getDefaults()
+        val defaultsJson = JSONObject(
+            mapOf(
+                "TextCapture" to defaults
             )
-            call.resolve(JSObject.fromJSONObject(defaults.toJson()))
-        } catch (e: Exception) {
-            println(e)
-            call.reject(JsonParseError(e.message).toString())
-        }
+        )
+        call.resolve(JSObject.fromJSONObject(defaultsJson))
     }
 
     @PluginMethod
     fun subscribeTextCaptureListener(call: PluginCall) {
-        textCaptureCallback?.dispose()
-        textCaptureCallback = TextCaptureCallback(this)
-        call.resolve()
+        textCaptureModule.addListener(CapacitorResult(call))
+    }
+
+    @PluginMethod
+    fun setModeEnabledState(call: PluginCall) {
+        val enabled = call.data.getBoolean("enabled")
+        textCaptureModule.setModeEnabled(enabled, CapacitorResult(call))
     }
 
     @PluginMethod
@@ -100,21 +59,37 @@ class ScanditTextNative (
             if (!data.has(FIELD_RESULT)) {
                 throw JSONException("Missing $FIELD_RESULT field in response json")
             }
-            val result: JSONObject = data.optJSONObject(FIELD_RESULT) ?: JSONObject()
-            when {
-                isFinishTextCaptureModeCallback(result) -> textCaptureCallback?.onFinishCallback(
-                    SerializableFinishModeCallbackData.fromJson(result)
-                )
-                else ->
-                    throw JSONException("Cannot recognise finish callback action with data $data")
-            }
+            val result: JSONObject = data.getJSObject(FIELD_RESULT) ?: JSONObject()
+            textCaptureModule.finishDidCapture(
+                result.getBoolean("enabled"),
+                CapacitorResult(call)
+            )
         } catch (e: JSONException) {
-            println(e)
             call.reject(JsonParseError(e.message).toString())
         } catch (e: RuntimeException) {
-            println(e)
             call.reject(JsonParseError(e.message).toString())
         }
+    }
+
+    @PluginMethod
+    fun updateTextCaptureOverlay(call: PluginCall) {
+        val overlayJson = call.data.getString("overlayJson")
+            ?: return call.reject(WRONG_INPUT)
+        textCaptureModule.updateOverlay(overlayJson, CapacitorResult(call))
+    }
+
+    @PluginMethod
+    fun updateTextCaptureMode(call: PluginCall) {
+        val modeJson = call.data.getString("modeJson")
+            ?: return call.reject(WRONG_INPUT)
+        textCaptureModule.updateModeFromJson(modeJson, CapacitorResult(call))
+    }
+
+    @PluginMethod
+    fun applyTextCaptureModeSettings(call: PluginCall) {
+        val modeSettingsJson = call.data.getString("modeSettingsJson")
+            ?: return call.reject(WRONG_INPUT)
+        textCaptureModule.applyModeSettings(modeSettingsJson, CapacitorResult(call))
     }
 
     override fun load() {
@@ -128,46 +103,35 @@ class ScanditTextNative (
         } else {
             Log.e("Registering:", "Core not found")
         }
+
+        textCaptureModule.onCreate(bridge.context)
     }
 
     override fun handleOnStart() {
-        textCaptureDeserializer.listener = this
-        Deserializers.Factory.addModeDeserializer(textCaptureDeserializer)
+        textCaptureModule.setModeEnabled(lastTextCaptureEnabledState, CapacitorNoopResult())
     }
 
     override fun handleOnStop() {
-        lastTextCaptureEnabledState = textCaptureHandler.textCapture?.isEnabled ?: false
-        textCaptureHandler.textCapture?.isEnabled = false
-        textCaptureDeserializer.listener = null
-        Deserializers.Factory.removeModeDeserializer(textCaptureDeserializer)
-        textCaptureCallback?.forceRelease()
+        lastTextCaptureEnabledState = textCaptureModule.isModeEnabled()
+        textCaptureModule.setModeEnabled(false, CapacitorNoopResult())
     }
 
-    override fun onModeDeserializationFinished(
-        deserializer: TextCaptureDeserializer,
-        mode: TextCapture,
-        json: JsonValue
-    ) {
-        if (json.contains("enabled")) {
-            mode.isEnabled = json.requireByKeyAsBoolean("enabled")
-        }
-        textCaptureHandler.attachTextCapture(mode)
+    override fun handleOnDestroy() {
+        textCaptureModule.onDestroy()
     }
 
-    override fun onTextCaptured(mode: TextCapture, session: TextCaptureSession, data: FrameData) {
-        lastFrameData.frameData.set(data)
-        textCaptureCallback?.onTextCaptured(mode, session, data)
-        lastFrameData.frameData.set(null)
+    override fun emit(eventName: String, payload: MutableMap<String, Any?>) {
+        payload[FIELD_EVENT_NAME] = eventName
+
+        notifyListeners(eventName, JSObject.fromJSONObject(JSONObject(payload)))
     }
 
-    private fun isFinishTextCaptureModeCallback(data: JSONObject) =
-        data.has(FIELD_FINISH_CALLBACK_ID) && data[FIELD_FINISH_CALLBACK_ID] == ACTION_TEXT_CAPTURED
+    override fun hasListenersForEvent(eventName: String): Boolean = this.hasListeners(eventName)
 
-    override fun notify(name: String, data: JSObject) {
-        notifyListeners(name, data)
+    companion object {
+        private const val FIELD_EVENT_NAME = "name"
+        private const val FIELD_RESULT = "result"
+        private const val CORE_PLUGIN_NAME = "ScanditCaptureCoreNative"
+        private const val WRONG_INPUT = "Wrong input parameter"
     }
-}
-
-interface CapacitorPlugin {
-    fun notify(name: String, data: JSObject)
 }

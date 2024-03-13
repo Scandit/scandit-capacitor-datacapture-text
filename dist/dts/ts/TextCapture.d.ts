@@ -1,11 +1,12 @@
 import { CameraSettings } from 'scandit-datacapture-frameworks-core';
+import { TextCaptureListenerProxy } from './Capacitor/TextCaptureListenerProxy';
 import { DataCaptureContext, DataCaptureMode, PrivateDataCaptureMode } from 'scandit-datacapture-frameworks-core';
 import { DefaultSerializeable } from 'scandit-datacapture-frameworks-core';
 import { TextCaptureFeedback, TextCaptureListener } from './TextCapture+Related';
 import { TextCaptureSettings } from './TextCaptureSettings';
 export interface PrivateTextCapture extends PrivateDataCaptureMode {
     _context: DataCaptureContext | null;
-    didChange: () => Promise<void>;
+    listenerProxy: TextCaptureListenerProxy;
 }
 export declare class TextCapture extends DefaultSerializeable implements DataCaptureMode {
     get isEnabled(): boolean;
@@ -26,5 +27,4 @@ export declare class TextCapture extends DefaultSerializeable implements DataCap
     applySettings(settings: TextCaptureSettings): Promise<void>;
     addListener(listener: TextCaptureListener): void;
     removeListener(listener: TextCaptureListener): void;
-    private didChange;
 }
