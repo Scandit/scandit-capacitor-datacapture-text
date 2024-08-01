@@ -2,7 +2,9 @@ import { Defaults } from './Defaults';
 export declare const Capacitor: {
     pluginName: string;
     defaults: Defaults;
-    exec: (success: Function | null, error: Function | null, functionName: string, args: [any] | null) => void;
+    exec: (success: Function | null, error: Function | null, functionName: string, args: [
+        any
+    ] | null) => void;
 };
 export interface CapacitorWindow extends Window {
     Scandit: any;
